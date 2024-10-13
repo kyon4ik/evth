@@ -5,6 +5,17 @@ void binheap_init(binheap_t* self, size_t cap, compare_fn comp, size_t elsz) {
   self->comp = comp;
 }
 
+void binheap_build(binheap_t* self, const void* data, size_t n, compare_fn comp, size_t elsz) {
+  assert(n > 0);
+  vec_build(&self->data, data, n, elsz);
+  self->comp = comp;
+
+  for (size_t i = n - 1; i > 0; --i) {
+    binheap_sift_down(self, i);
+  }  
+  binheap_sift_down(self, 0);
+}
+
 void binheap_del(binheap_t* self) {
   vec_del(&self->data);
 }
@@ -60,7 +71,6 @@ void binheap_sift_down_range(binheap_t* self, size_t pos, size_t end) {
   void* child_value = vec_index(&self->data, child);
   if (self->comp(value, child_value) < 0) {
     swap(value, child_value, self->data.data.elsz, swap_slot);
-    pos = child;
   }
 }
 

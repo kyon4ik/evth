@@ -1,3 +1,5 @@
+#pragma once
+
 #include "utils.h"
 
 void quick_sort(void* base, size_t n, size_t size, compare_fn comp);
