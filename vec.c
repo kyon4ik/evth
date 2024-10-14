@@ -1,4 +1,5 @@
 #include "vec.h"
+#include <assert.h>
 
 #define Self vec_t*
 #define CSelf const vec_t*

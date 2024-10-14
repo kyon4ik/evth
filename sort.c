@@ -1,4 +1,6 @@
 #include "sort.h"
+#include <stdlib.h>
+#include <string.h>
 
 static void merge_sort_impl(void* buf, void* base, size_t n, size_t size, compare_fn comp) {
   if (n == 1) {

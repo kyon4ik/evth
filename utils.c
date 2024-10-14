@@ -1,4 +1,7 @@
 #include "utils.h"
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 void* safe_realloc(void* ptr, size_t nmemb, size_t size) {
   size_t final_size = nmemb * size;

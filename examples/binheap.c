@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdint.h>
+#include <string.h>
 #include "../binheap.h" 
 
 #define SGN(X) ((X) > 0 ? 1 : ((X) < 0 ? -1 : 0)) 

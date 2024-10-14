@@ -1,14 +1,6 @@
 #pragma once
 
-#include <assert.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <stddef.h>
-#include <string.h>
-
-#define max(a, b) (a) > (b) ? (a) : (b)
-#define min(a, b) (a) < (b) ? (a) : (b)
-#define gen_swap(x, y, T) do { T tmp = *x; *x = *y; *y = tmp; } while (0)
 
 typedef int (*compare_fn)(const void*, const void*);
 

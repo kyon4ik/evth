@@ -1,6 +1,9 @@
 #include "volume.h"
+#include "macro.h"
 
+#include <assert.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 void volume_init(volume_t* self, size_t cap, size_t elsz) {
   self->cap = cap;
@@ -22,7 +25,7 @@ void volume_grow(volume_t* self, size_t len, size_t extra) {
   assert(extra > 0);
 
   size_t req_cap = len + extra;
-  size_t cap = max(self->cap * 2, req_cap);
+  size_t cap = Max(self->cap * 2, req_cap);
 
   self->elems = safe_realloc(self->elems, cap, self->elsz);
   self->cap = cap;

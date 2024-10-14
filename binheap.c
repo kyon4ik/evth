@@ -1,4 +1,5 @@
 #include "binheap.h"
+#include <assert.h>
 
 void binheap_init(binheap_t* self, size_t cap, compare_fn comp, size_t elsz) {
   vec_init(&self->data, cap, elsz);
