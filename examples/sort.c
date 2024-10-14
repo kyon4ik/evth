@@ -1,40 +1,53 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 #include "../sort.h" 
+#include "../binheap.h"
 
-int comp(const void* _x, const void* _y) {
-  const int* x = (const int*)_x;
-  const int* y = (const int*)_y;
-  return *x - *y;
+int asc(const void* x, const void* y) {
+  return *(int*)x - *(int*)y;
 }
 
 int main(void) {
   int n, m;
   scanf("%d %d", &n, &m);
 
-  int* a = (int*)calloc(n, sizeof(int));
-  int* b = (int*)calloc(m, sizeof(int));
+  vec_t a, b;
+  vec_init(&a, n, sizeof(int));
+  vec_init(&b, m, sizeof(int));
+
+  int el;
   for (int i = 0; i < n; ++i) {
-    scanf("%d", &a[i]);
+    scanf("%d", &el);
+    vec_push(&a, &el);
   }
   for (int i = 0; i < m; ++i) {
-    scanf("%d", &b[i]);
+    scanf("%d", &el);
+    vec_push(&b, &el);
   }
 
-  quick_sort(a, n, sizeof(*a), comp);
-  quick_sort(b, m, sizeof(*b), comp);
+  quick_sort(a.data.elems, a.len, sizeof(int), asc);
+  binheap_sort(b, asc);
+
+  for (int i = 0; i < n; ++i) {
+    printf("%d ", *(int*)vec_index(&a, i));
+  }
+  printf("\n");
+  for (int i = 0; i < m; ++i) {
+    printf("%d ", *(int*)vec_index(&b, i));
+  }
+  printf("\n");
 
   int j = 0;
   for (int i = 0; i < n; ++i) {
-    while (j < m && b[j] < a[i]) {
+    while (j < m && memcmp(vec_index(&b, j), vec_index(&a, i), sizeof(int)) < 0) {
       j += 1;
     }
-    if (j < m && b[j] == a[i]) {
-      printf("%d ", a[i]);
+    if (j < m && memcmp(vec_index(&b, j), vec_index(&a, i), sizeof(int)) == 0) {
+      printf("%d ", *(int*)vec_index(&a, i));
       j += 1;
     }
   }
 
-  free(a);
-  free(b);
+  vec_del(&a);
+  vec_del(&b);
 }
