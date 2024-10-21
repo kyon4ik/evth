@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "../sort.h" 
-#include "../binheap.h"
+#include <sort.h> 
+#include <binheap.h>
 
 int asc(const void* x, const void* y) {
   return *(int*)x - *(int*)y;
