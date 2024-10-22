@@ -15,6 +15,10 @@ void vec_build(Self self, const void* data, size_t n, size_t elsz) {
   self->len = n;
 }
 
+void vec_copy(Self self, CSelf other) {
+  vec_build(self, other->data.elems, other->len, other->data.elsz);
+}
+
 void vec_del(Self self) {
   volume_del(&self->data);
 }

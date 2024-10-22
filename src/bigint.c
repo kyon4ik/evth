@@ -1,5 +1,109 @@
 #include "bigint.h"
+#include "macro.h"
+#include "vec.h"
 #include <assert.h>
+
+void biguint_init(biguint_t* self, uint64_t val) {
+  vec_init(&self->dig, 1, sizeof(uint64_t));
+  vec_push(&self->dig, &val);
+}
+
+void biguint_del(biguint_t* self) {
+  vec_del(&self->dig);
+}
+
+void biguint_copy(biguint_t* dst, const biguint_t* src) {
+  vec_copy(&dst->dig, &src->dig);
+}
+
+biguint_t biguint_add(const biguint_t* a, const biguint_t* b) {
+  biguint_t res;
+  size_t alen = a->dig.len, blen = b->dig.len;
+  vec_init(&res.dig, Max(alen, blen) + (alen == blen), sizeof(uint64_t));
+  if (alen < blen) {
+    Swap(&a, &b, const biguint_t*);
+    Swap(&alen, &blen, size_t);
+  } 
+
+  uint64_t carry = 0;
+  for (size_t i = 0; i < blen; ++i) {
+    uint64_t ai = *(uint64_t*)vec_index(&a->dig, i);
+    uint64_t bi = *(uint64_t*)vec_index(&b->dig, i);
+    uint64_t resi = carry;
+    carry = adc64(resi, ai, &resi); 
+    carry += adc64(resi, bi, &resi);
+    vec_push(&res.dig, &resi);
+  }
+
+  for (size_t i = blen; i < alen; ++i) {
+    uint64_t ai = *(uint64_t*)vec_index(&a->dig, i);
+    uint64_t resi = carry;
+    carry = adc64(resi, ai, &resi);
+    vec_push(&res.dig, &resi);
+  }
+
+  if (carry) {
+    vec_push(&res.dig, &carry);
+  }
+  
+  return res;
+}
+
+void biguint_adds(biguint_t* a, const biguint_t* b) {
+  size_t alen = a->dig.len, blen = b->dig.len;
+  if (alen < blen) {
+    uint64_t zero = 0;
+    vec_reserve(&a->dig, blen - alen);
+    for (size_t i = 0; i < blen - alen; ++i) {
+      vec_push(&a->dig, &zero);
+    }
+  }
+
+  uint64_t carry = 0;
+  for (size_t i = 0; i < blen; ++i) {
+    uint64_t* ai = (uint64_t*)vec_index(&a->dig, i);
+    uint64_t bi = *(uint64_t*)vec_index(&b->dig, i);
+    carry = adc64(*ai, carry, ai); 
+    carry += adc64(*ai, bi, ai);
+  }
+  for (size_t i = blen; i < alen && carry > 0; ++i) {
+    uint64_t* ai = (uint64_t*)vec_index(&a->dig, i);
+    carry = adc64(*ai, carry, ai);
+  }
+
+  if (carry) {
+    vec_push(&a->dig, &carry);
+  }
+}
+
+uint64_t biguint_div64(const biguint_t* a, uint64_t b, biguint_t* res) {
+  size_t alen = a->dig.len;
+  vec_init(&res->dig, alen, sizeof(uint64_t));
+  assert(alen > 0);
+  
+  uint128_t rem = UINT128_C(VecIdx(&a->dig, alen - 1, uint64_t));
+  for (size_t i = alen - 1; i > 0; --i) {
+    uint64_t ai = VecIdx(&a->dig, i - 1, uint64_t);
+    uint128_t num = { .hi = rem.lo, .lo = ai };
+    num = divmod128(num, UINT128_C(b), &rem);
+    if (num.hi != 0) 
+      vec_push(&res->dig, &num.hi);
+    vec_push(&res->dig, &num.lo);
+  } 
+
+  if (cmp128(rem, UINT128_C(b)) >= 0 || alen == 1) {
+    uint128_t num = divmod128(rem, UINT128_C(b), &rem);
+    vec_push(&res->dig, &num.lo);
+  }
+  
+  size_t reslen = res->dig.len;
+  for (size_t i = 0; i < reslen / 2; ++i) {
+    Swap((uint64_t*)vec_index(&res->dig, i), 
+         (uint64_t*)vec_index(&res->dig, reslen - i - 1), uint64_t);
+  }
+
+  return rem.lo;
+}
 
 uint64_t adc64(uint64_t a, uint64_t b, uint64_t* c) {
   *c = a + b;

@@ -24,6 +24,15 @@ typedef struct {
   vec_t dig; 
 } biguint_t;
 
+void biguint_init(biguint_t* self, uint64_t val);
+void biguint_del(biguint_t* self);
+void biguint_copy(biguint_t* dst, const biguint_t* src);
+
+biguint_t biguint_add(const biguint_t* a, const biguint_t* b);
+void biguint_adds(biguint_t* a, const biguint_t* b);
+
+uint64_t biguint_div64(const biguint_t* a, uint64_t b, biguint_t* res);
+
 uint64_t adc64(uint64_t a, uint64_t b, uint64_t* c);
 uint64_t sbb64(uint64_t a, uint64_t b, uint64_t* c);
 uint64_t umul64(uint64_t a, uint64_t b, uint64_t* lo);

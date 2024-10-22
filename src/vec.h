@@ -4,6 +4,8 @@
 
 #include <stdbool.h>
 
+#define VecIdx(v, idx, T) (*(T*)vec_index(v, idx))
+
 typedef struct {
   volume_t data;
   size_t len; 
@@ -15,6 +17,8 @@ typedef struct {
 void vec_init(Self self, size_t cap, size_t elsz);
 
 void vec_build(Self self, const void* data, size_t n, size_t elsz);
+
+void vec_copy(Self self, CSelf other);
 
 void vec_del(Self self);
 
