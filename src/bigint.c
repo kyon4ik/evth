@@ -91,7 +91,7 @@ uint64_t biguint_div64(const biguint_t* a, uint64_t b, biguint_t* res) {
     vec_push(&res->dig, &num.lo);
   } 
 
-  if (cmp128(rem, UINT128_C(b)) >= 0 || alen == 1) {
+  if (alen == 1) {
     uint128_t num = divmod128(rem, UINT128_C(b), &rem);
     vec_push(&res->dig, &num.lo);
   }
